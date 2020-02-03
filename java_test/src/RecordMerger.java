@@ -21,9 +21,6 @@ public class RecordMerger {
 		}
 
 		// your code starts here.
-		System.out.println("STARTING...");
-		System.out.println(Arrays.asList(args));
-
 		RecordMerger recordMerger = new RecordMerger(Arrays.asList(args));
 		recordMerger.parseRecords();
 		recordMerger.generateCSV(FILENAME_COMBINED);
@@ -46,7 +43,6 @@ public class RecordMerger {
 		this.csvFiles = filterFilesByExtension(inputFiles, ".csv");
 		this.uniqueColumnList = new ArrayList<>();
 		this.idMapOfColumnMap = new HashMap<>();
-
 	}
 
 	private List<String> filterFilesByExtension(List<String> inputFiles, String extension) {
@@ -64,7 +60,9 @@ public class RecordMerger {
 		HTMLHelper htmlHelper = new HTMLHelper(ID_COLUMN, EMPTY_CELL);
 		htmlFiles.forEach(filename -> {
 			// does not handle duplicate IDs
-			idMapOfColumnMap.putAll(htmlHelper.parseHTML(filename, HTML_TABLE_ID));
+			idMapOfColumnMap = consolidate(
+					idMapOfColumnMap,
+					htmlHelper.parseHTML(filename, HTML_TABLE_ID));
 			updateUniqueColumns(htmlHelper.getColumnNamesList());
 		});
 	}
@@ -72,10 +70,11 @@ public class RecordMerger {
 	public void parseCSV() {
 		CSVHelper csvHelper = new CSVHelper(ID_COLUMN, EMPTY_CELL);
 		csvFiles.forEach(filename -> {
-			// does not handle duplicate IDs
-				idMapOfColumnMap.putAll(csvHelper.parseAllCSV(filename));
-				updateUniqueColumns(csvHelper.getColumnNamesList());
-			});
+			idMapOfColumnMap = consolidate(
+					idMapOfColumnMap,
+					csvHelper.parseAllCSV(filename));
+			updateUniqueColumns(csvHelper.getColumnNamesList());
+		});
 	}
 
 	public void generateCSV(String outputName) throws IOException {
@@ -98,5 +97,19 @@ public class RecordMerger {
 				.concat(uniqueColumnList.stream(), newColumns.stream())
 				.distinct()
 				.collect(Collectors.toList());
+	}
+
+	private Map<String, Map<String, String>> consolidate(Map<String, Map<String, String>> a, Map<String, Map<String, String>> b) {
+		a.forEach((aK, aV) -> {
+			if(b.containsKey(aK)) {
+				aV.putAll(b.get(aK));
+			}
+		});
+		b.forEach((bK, bV) -> {
+			if(!a.containsKey(bK)) {
+				a.put(bK, bV);
+			}
+		});
+		return a;
 	}
 }
