@@ -23,18 +23,20 @@ public class CSVHelper extends BaseHelper {
                 CSVReader csvReader = new CSVReader(reader);
         ) {
             Map<String, Map<String, String>> idMapOfColumnMap = new HashMap<>();
-            String[] columnNamesArray = csvReader.readNext();
 
-            this.columnNamesList = Arrays.asList(columnNamesArray);
-
-            int indexOfId = columnNamesList.indexOf(this.idColumn);
+            this.columnNamesList = Arrays.asList(csvReader.readNext());
 
             String[] line;
             while ((line = csvReader.readNext()) != null) {
-                idMapOfColumnMap.put(line[indexOfId], parseLine(line, columnNamesArray));
+                List<String> lineList = Arrays.asList(line);
+
+                idMapOfColumnMap.put(
+                        lineList.get(columnNamesList.indexOf(this.idColumn)),
+                        parseLine(lineList, columnNamesList));
             }
 
             return idMapOfColumnMap;
+
         } catch (IOException e) {
             // TODO: customize exception message
             throw new RuntimeException(e);

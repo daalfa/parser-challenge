@@ -18,17 +18,7 @@ public class BaseHelper {
     public List<String> getColumnNamesList() {
         return columnNamesList;
     }
-
-    protected Map<String, String> parseLine(String[] line, String[] columns) {
-        Map<String, String> columnMap = new HashMap<>();
-        for(int i=0; i<line.length; i++) {
-            if(!columns[i].equals(this.idColumn)) {
-                columnMap.put(columns[i], line[i]);
-            }
-        }
-        return columnMap;
-    }
-
+    
     protected Map<String, String> parseLine(List<String> row, List<String> columns) {
         Map<String, String> columnMap = new HashMap<>();
         for(int i=0; i<row.size(); i++) {
