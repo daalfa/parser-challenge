@@ -25,12 +25,13 @@ public class RecordMerger {
 		System.out.println(Arrays.asList(args));
 
 		RecordMerger recordMerger = new RecordMerger(Arrays.asList(args));
-		recordMerger.parseCSV();
+		recordMerger.parseRecords();
 		recordMerger.generateCSV(FILENAME_COMBINED);
 	}
 
 	private static final String ID_COLUMN = "ID";
 	private static final String EMPTY_CELL = "";
+	private static final String HTML_TABLE_ID = "directory";
 
 	private List<String> inputFiles;
 	private List<String> htmlFiles;
@@ -54,10 +55,23 @@ public class RecordMerger {
 				.collect(Collectors.toList());
 	}
 
+	public void parseRecords() {
+		parseHTML();
+		parseCSV();
+	}
+
+	public void parseHTML() {
+		HTMLHelper htmlHelper = new HTMLHelper(ID_COLUMN, EMPTY_CELL);
+		htmlFiles.forEach(filename -> {
+			// does not handle duplicate IDs
+			idMapOfColumnMap.putAll(htmlHelper.parseHTML(filename, HTML_TABLE_ID));
+			updateUniqueColumns(htmlHelper.getColumnNamesList());
+		});
+	}
+
 	public void parseCSV() {
+		CSVHelper csvHelper = new CSVHelper(ID_COLUMN, EMPTY_CELL);
 		csvFiles.forEach(filename -> {
-			// for the sake of keeping stateless re-instance the class (low impact in HEAP)
-				CSVHelper csvHelper = new CSVHelper(ID_COLUMN, EMPTY_CELL);
 			// does not handle duplicate IDs
 				idMapOfColumnMap.putAll(csvHelper.parseAllCSV(filename));
 				updateUniqueColumns(csvHelper.getColumnNamesList());
@@ -85,6 +99,4 @@ public class RecordMerger {
 				.distinct()
 				.collect(Collectors.toList());
 	}
-
-
 }

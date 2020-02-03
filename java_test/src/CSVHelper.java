@@ -9,29 +9,20 @@ import java.nio.file.Paths;
 import java.util.*;
 
 
-public class CSVHelper {
-
-    private List<String> columnNamesList;
-
-    private String idColumn;
-    private String emptyCell;
+public class CSVHelper extends BaseHelper {
 
     public CSVHelper(String idColumn, String emptyCell) {
-        this.idColumn = idColumn;
-        this.emptyCell = emptyCell;
-        this.columnNamesList = new ArrayList<>();
+        super(idColumn, emptyCell);
     }
 
-    public List<String> getColumnNamesList() {
-        return columnNamesList;
-    }
+
 
     public Map<String, Map<String, String>> parseAllCSV(String csvFile) {
         try (
                 Reader reader = Files.newBufferedReader(Paths.get(csvFile));
                 CSVReader csvReader = new CSVReader(reader);
         ) {
-            Map<String, Map<String, String>> idsMapOfColumnsMap = new HashMap<>();
+            Map<String, Map<String, String>> idMapOfColumnMap = new HashMap<>();
             String[] columnNamesArray = csvReader.readNext();
 
             this.columnNamesList = Arrays.asList(columnNamesArray);
@@ -40,25 +31,17 @@ public class CSVHelper {
 
             String[] line;
             while ((line = csvReader.readNext()) != null) {
-                idsMapOfColumnsMap.put(line[indexOfId], parseLine(line, columnNamesArray));
+                idMapOfColumnMap.put(line[indexOfId], parseLine(line, columnNamesArray));
             }
 
-            return idsMapOfColumnsMap;
+            return idMapOfColumnMap;
         } catch (IOException e) {
             // TODO: customize exception message
             throw new RuntimeException(e);
         }
     }
 
-    private Map<String, String> parseLine(String[] line, String[] columns) {
-        Map<String, String> column_map = new HashMap<>();
-        for(int i=0; i<line.length; i++) {
-            if(!columns[i].equals(this.idColumn)) {
-                column_map.put(columns[i], line[i]);
-            }
-        }
-        return column_map;
-    }
+
 
     public void generateCSV(Map<String, Map<String, String>> idMapOfColumnMap, List<String> columnNamesList, String outputName) {
         try (
@@ -71,8 +54,6 @@ public class CSVHelper {
                         CSVWriter.DEFAULT_LINE_END);
         ) {
             csvWriter.writeNext(columnNamesList.toArray(new String[columnNamesList.size()]));
-
-            DEBUG_PRINT(idMapOfColumnMap);
 
             idMapOfColumnMap.forEach((K, V) -> {
                 List<String> newLine = generateLine(columnNamesList, V, K);
@@ -96,14 +77,5 @@ public class CSVHelper {
             }
         }
         return newLine;
-    }
-
-    private void DEBUG_PRINT(Map<String, Map<String, String>> map) {
-        map.forEach((K1, V1) -> {
-            V1.forEach((K2, V2) -> {
-                System.out.println(
-                        String.format("{%s: {%s: %s}}", K1, K2, V2));
-            });
-        });
     }
 }
