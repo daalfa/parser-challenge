@@ -8,7 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-
+/**
+ * Helper class to aggregate methods related to CSV
+ */
 public class CSVHelper extends BaseHelper {
 
     public CSVHelper(String idColumn, String emptyCell) {

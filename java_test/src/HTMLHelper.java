@@ -12,6 +12,9 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Helper class to aggregate methods related to HTML
+ */
 public class HTMLHelper extends BaseHelper {
 
     public HTMLHelper(String idColumn, String emptyCell) {

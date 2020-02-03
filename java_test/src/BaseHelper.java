@@ -3,6 +3,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Base class containing common methods
+ */
 public class BaseHelper {
 
     protected List<String> columnNamesList;
@@ -18,7 +21,7 @@ public class BaseHelper {
     public List<String> getColumnNamesList() {
         return columnNamesList;
     }
-    
+
     protected Map<String, String> parseLine(List<String> row, List<String> columns) {
         Map<String, String> columnMap = new HashMap<>();
         for(int i=0; i<row.size(); i++) {
